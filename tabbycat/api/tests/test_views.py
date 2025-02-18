@@ -16,6 +16,7 @@ class RootTests(APITestCase):
             "_links": {"v1": "http://testserver/api/v1"},
             "timezone": settings.TIME_ZONE,
             "version": settings.TABBYCAT_VERSION,
+            "version_name": settings.TABBYCAT_CODENAME,
         })
 
     def test_api_disabled_root(self):
@@ -136,6 +137,6 @@ class BreakingTeamsViewsetTests(CompletedTournamentTestMixin, APITestCase):
         self.client.login(username="admin", password="admin")
         response = self.client.patch(reverse('api-breakcategory-break', kwargs={'tournament_slug': self.tournament.slug, 'pk': 1}), {
             'team': 'http://testserver/api/v1/tournaments/demo/teams/7',
-            'remark': BreakingTeam.REMARK_WITHDRAWN,
+            'remark': BreakingTeam.Remark.WITHDRAWN,
         }, content_type='application/json')
         self.assertEqual(len(response.data), 16)

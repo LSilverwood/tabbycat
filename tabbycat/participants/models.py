@@ -7,6 +7,7 @@ from django.db import models
 from django.db.models import Value
 from django.db.models.functions import Coalesce
 from django.utils.functional import cached_property
+from django.utils.safestring import mark_safe
 from django.utils.translation import gettext_lazy as _
 
 from utils.managers import LookupByNameFieldsMixin
@@ -60,6 +61,25 @@ class Institution(models.Model):
 
     def __str__(self):
         return str(self.name)
+
+
+class TournamentInstitution(models.Model):
+    tournament = models.ForeignKey(
+        "tournaments.Tournament", models.CASCADE, verbose_name=_("tournament"),
+    )
+    institution = models.ForeignKey(
+        Institution, models.CASCADE, verbose_name=_("institution"),
+    )
+    teams_requested = models.PositiveIntegerField(
+        verbose_name=_("Team slots requested"),
+    )
+    teams_allocated = models.PositiveIntegerField(verbose_name=_("Team slots allocated"))
+    adjudicators_requested = models.PositiveIntegerField(
+        verbose_name=_("Adjudicator slots requested"),
+    )
+    adjudicators_allocated = models.PositiveIntegerField(
+        verbose_name=_("Adjudicator slots allocated"),
+    )
 
 
 class SpeakerCategory(models.Model):
@@ -134,9 +154,34 @@ class Person(models.Model):
         return str(self.name)
 
     def get_public_name(self, tournament):
+        if self.anonymous:
+            return mark_safe("<em>" + _("Redacted") + "</em>")
         if tournament.pref('participant_code_names') == 'off':
             return self.name
         return self.code_name
+
+
+class Coach(Person):
+    tournament_institution = models.ForeignKey(
+        TournamentInstitution,
+        models.CASCADE,
+        blank=True,
+        verbose_name=_("tournament institution"),
+    )
+
+    class Meta:
+        verbose_name = _("coach")
+        verbose_name_plural = _("coaches")
+
+    def __str__(self):
+        if self.institution is None:
+            return self.name
+        else:
+            return "%s (%s)" % (self.name, self.institution.code)
+
+    @property
+    def region(self):
+        return self.institution.region if self.institution else None
 
 
 class TeamManager(LookupByNameFieldsMixin, models.Manager):
