@@ -113,14 +113,14 @@ else:
 CACHES = {
     "default": {
         "BACKEND": "django_redis.cache.RedisCache",
-        "LOCATION": ALT_REDIS_URL,
+        "LOCATION": ALT_REDIS_URL+"?ssl_cert_reqs=CERT_NONE",
         "OPTIONS": {
             "CLIENT_CLASS": "django_redis.client.DefaultClient",
             # "IGNORE_EXCEPTIONS": True, # Supresses ConnectionError at max
             "SOCKET_CONNECT_TIMEOUT": 5,
             "SOCKET_TIMEOUT": 60,
             "CONNECTION_POOL_KWARGS": {
-                "ssl_cert_reqs": None,
+                "ssl_cert_reqs": None#,
                 #"max_connections": 5,
             },
         },
@@ -131,13 +131,13 @@ CHANNEL_LAYERS = {
     "default": {
         "BACKEND": "channels_redis.core.RedisChannelLayer",
         "CONFIG": {
-            "hosts": [{'address': environ.get('REDIS_URL'), "ssl_cert_reqs": None}],
+            "hosts": [{'address': environ.get('REDIS_URL')+"?ssl_cert_reqs=CERT_NONE", "ssl_cert_reqs": None}],
             # Remove channels from groups after 3 hours
             # This matches websocket_timeout in Daphne
-            "group_expiry": 10800,
-        },
+            "group_expiry": 10800
+        }
         # RedisChannelLayer should pool by default,
-    },
+    }
 }
 
 # ==============================================================================
