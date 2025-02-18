@@ -16,39 +16,39 @@ from .core import TABBYCAT_VERSION
 
 root = logging.getLogger()
 
-try:
-    import django
-    import redis
-    import channels
-    import channels_redis
-    import django_redis
-    import daphne
-    import asgiref
-    import sys
-    import pkg_resources
+# try:
+#     import django
+#     import redis
+#     import channels
+#     import channels_redis
+#     import django_redis
+#     import daphne
+#     import asgiref
+#     import sys
+#     import pkg_resources
 
-    # Important packages
-    important_versions = {
-        "Python": sys.version,
-        "Django": django.__version__,
-        "Redis-Py": redis.__version__,
-        "Django Redis": django_redis.__version__,
-        "Channels": channels.__version__,
-        "Channels Redis": channels_redis.__version__,
-        "Daphne": daphne.__version__,
-        "ASGIRef": asgiref.__version__,
-    }
+#     # Important packages
+#     important_versions = {
+#         "Python": sys.version,
+#         "Django": django.__version__,
+#         "Redis-Py": redis.__version__,
+#         "Django Redis": django_redis.__version__,
+#         "Channels": channels.__version__,
+#         "Channels Redis": channels_redis.__version__,
+#         "Daphne": daphne.__version__,
+#         "ASGIRef": asgiref.__version__,
+#     }
 
-    root.info("\n=== Important Package Versions ===")
-    for package, version in important_versions.items():
-        root.info(f"{package}: {version}")
+#     root.info("\n=== Important Package Versions ===")
+#     for package, version in important_versions.items():
+#         root.info(f"{package}: {version}")
 
-    root.info("\n=== All Installed Packages ===")
-    for package in sorted(pkg_resources.working_set, key=lambda p: p.project_name.lower()):
-        root.info(f"{package.project_name} ({package.version})")
+#     root.info("\n=== All Installed Packages ===")
+#     for package in sorted(pkg_resources.working_set, key=lambda p: p.project_name.lower()):
+#         root.info(f"{package.project_name} ({package.version})")
 
-except Exception as e:
-    root.error(f"Failed to load debug information: {str(e)}")
+# except Exception as e:
+#     root.error(f"Failed to load debug information: {str(e)}")
 
 # ==============================================================================
 # Heroku
