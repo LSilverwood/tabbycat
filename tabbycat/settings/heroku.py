@@ -1,5 +1,7 @@
 import logging
 from os import environ
+import ssl
+
 
 import dj_database_url
 import sentry_sdk
@@ -49,8 +51,6 @@ DATABASES = {
 # With fallback for Tabbykitten installs (no addons) or pre-2.2 instances
 if environ.get('REDISCLOUD_URL'):
     ALT_REDIS_URL = environ.get('REDISCLOUD_URL') # 30 clients on free
-    # replace "redis://" with "rediss://"
-    ALT_REDIS_URL = ALT_REDIS_URL.replace("redis://", "rediss://")
 else:
     ALT_REDIS_URL = environ.get('REDIS_URL') # 20 clients on free
 
@@ -81,7 +81,7 @@ CACHES = {
             "SOCKET_CONNECT_TIMEOUT": 5,
             "SOCKET_TIMEOUT": 60,
             "CONNECTION_POOL_KWARGS": {
-                "ssl_cert_reqs": None,
+                "ssl_cert_reqs": ssl.CERT_NONE,
                 #"max_connections": 5,
             },
         },
@@ -92,7 +92,7 @@ CHANNEL_LAYERS = {
     "default": {
         "BACKEND": "channels_redis.core.RedisChannelLayer",
         "CONFIG": {
-            "hosts": [{'address': environ.get('REDIS_URL'), "ssl_cert_reqs": None}],
+            "hosts": [{'address': environ.get('REDIS_URL'), "ssl_cert_reqs": ssl.CERT_NONE}],
             # Remove channels from groups after 3 hours
             # This matches websocket_timeout in Daphne
             "group_expiry": 10800,
