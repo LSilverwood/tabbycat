@@ -49,6 +49,8 @@ DATABASES = {
 # With fallback for Tabbykitten installs (no addons) or pre-2.2 instances
 if environ.get('REDISCLOUD_URL'):
     ALT_REDIS_URL = environ.get('REDISCLOUD_URL') # 30 clients on free
+    # replace "redis://" with "rediss://"
+    ALT_REDIS_URL = ALT_REDIS_URL.replace("redis://", "rediss://")
 else:
     ALT_REDIS_URL = environ.get('REDIS_URL') # 20 clients on free
 
