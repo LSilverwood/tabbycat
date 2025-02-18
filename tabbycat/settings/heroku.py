@@ -1,5 +1,6 @@
 import logging
 from os import environ
+import ssl
 
 import dj_database_url
 import sentry_sdk
@@ -8,6 +9,46 @@ from sentry_sdk.integrations.django import DjangoIntegration
 from sentry_sdk.integrations.redis import RedisIntegration
 
 from .core import TABBYCAT_VERSION
+
+# ==============================================================================
+# Debug Information
+# ==============================================================================
+
+root = logging.getLogger()
+
+try:
+    import django
+    import redis
+    import channels
+    import channels_redis
+    import django_redis
+    import daphne
+    import asgiref
+    import sys
+    import pkg_resources
+
+    # Important packages
+    important_versions = {
+        "Python": sys.version,
+        "Django": django.__version__,
+        "Redis-Py": redis.__version__,
+        "Django Redis": django_redis.__version__,
+        "Channels": channels.__version__,
+        "Channels Redis": channels_redis.__version__,
+        "Daphne": daphne.__version__,
+        "ASGIRef": asgiref.__version__,
+    }
+
+    root.info("\n=== Important Package Versions ===")
+    for package, version in important_versions.items():
+        root.info(f"{package}: {version}")
+
+    root.info("\n=== All Installed Packages ===")
+    for package in sorted(pkg_resources.working_set, key=lambda p: p.project_name.lower()):
+        root.info(f"{package.project_name} ({package.version})")
+
+except Exception as e:
+    root.error(f"Failed to load debug information: {str(e)}")
 
 # ==============================================================================
 # Heroku
@@ -79,7 +120,7 @@ CACHES = {
             "SOCKET_CONNECT_TIMEOUT": 5,
             "SOCKET_TIMEOUT": 60,
             "CONNECTION_POOL_KWARGS": {
-                "ssl_cert_reqs": None,
+                "ssl_cert_reqs": ssl.CERT_NONE,
                 #"max_connections": 5,
             },
         },
@@ -90,7 +131,7 @@ CHANNEL_LAYERS = {
     "default": {
         "BACKEND": "channels_redis.core.RedisChannelLayer",
         "CONFIG": {
-            "hosts": [{'address': environ.get('REDIS_URL'), "ssl_cert_reqs": None}],
+            "hosts": [{'address': environ.get('REDIS_URL'), "ssl_cert_reqs": ssl.CERT_NONE}],
             # Remove channels from groups after 3 hours
             # This matches websocket_timeout in Daphne
             "group_expiry": 10800,
