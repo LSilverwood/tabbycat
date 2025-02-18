@@ -139,7 +139,7 @@ elif environ.get('SENDGRID_USERNAME', ''):
 # ==============================================================================
 
 if not environ.get('DISABLE_SENTRY'):
-    DISABLE_SENTRY = False
+    DISABLE_SENTRY = True
     sentry_sdk.init(
         dsn="https://6bf2099f349542f4b9baf73ca9789597@o85113.ingest.sentry.io/185382",
         integrations=[
