@@ -211,8 +211,11 @@ print_yellow("Waiting for Heroku Redis to provision (may take up to 5 minutes)..
 
 while not redis_provisioned:
     time.sleep(30)
-    redis_output = subprocess.check_output(redis_status_command).decode().split("\n")
-    redis_provisioned = "available" in redis_output[2]
+    ready = input("Ready to deploy? (y/n)")
+    if ready == "y":
+        redis_provisioned = True
+    # redis_output = subprocess.check_output(redis_status_command).decode().split("\n")
+    # redis_provisioned = "available" in redis_output[2]
 
 print("Heroku Redis is available, starting deployment")
 
